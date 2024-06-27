@@ -5,4 +5,4 @@ d = { 'settings': { 'branch': 'main',
                 'doc_host': 'https://simveit.github.io',
                 'git_url': 'https://github.com/simveit/groquette',
                 'lib_path': 'groquette'},
-  'syms': {'groquette.core': {'groquette.core.foo': ('core.html#foo', 'groquette/core.py')}}}
+  'syms': {'groquette.core': {}}}
