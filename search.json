@@ -1,0 +1,42 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "groquette",
+    "section": "",
+    "text": "This file will become your README and also the index of your documentation.",
+    "crumbs": [
+      "groquette"
+    ]
+  },
+  {
+    "objectID": "index.html#install",
+    "href": "index.html#install",
+    "title": "groquette",
+    "section": "Install",
+    "text": "Install\npip install groquette",
+    "crumbs": [
+      "groquette"
+    ]
+  },
+  {
+    "objectID": "index.html#how-to-use",
+    "href": "index.html#how-to-use",
+    "title": "groquette",
+    "section": "How to use",
+    "text": "How to use\nFill me in please! Don’t forget code examples:\n\n1+1\n\n2",
+    "crumbs": [
+      "groquette"
+    ]
+  },
+  {
+    "objectID": "core.html",
+    "href": "core.html",
+    "title": "Groquette",
+    "section": "",
+    "text": "Groq has available a bunch of models. To be able to select one of them in the future we make them accessible here.\nAccessing a model is easy as that\n\nmodels\n\n('llama3-70b-8192', 'mixtral-8x7b-32768', 'llama3-8b-8192', 'gemma-7b-it')\n\n\nIn the following we will use the large Llama version as the most capable one.\n\nmodel = models[0]\nmodel\n\n'llama3-70b-8192'\n\n\n\nGroq SDK\nLet’s see an example of how to invoke the chat client, pass a message to it and get a reply\n\ncli = Groq()\n\n\nm = {\"role\":\"user\", \"content\":\"Hello, I am Simon.\"}\nr = cli.chat.completions.create(messages=[m], model=model, max_tokens=100)\nr\n\nChatCompletion(id='chatcmpl-cab0945f-ec81-4b8f-8221-7824ea30f3cc', choices=[Choice(finish_reason='stop', index=0, logprobs=None, message=ChatCompletionMessage(content=\"Hello Simon! It's nice to meet you. Is there something I can help you with, or would you like to chat?\", role='assistant', function_call=None, tool_calls=None))], created=1719508342, model='llama3-70b-8192', object='chat.completion', system_fingerprint='fp_753a4aecf6', usage=CompletionUsage(completion_tokens=27, prompt_tokens=16, total_tokens=43, completion_time=0.077142857, prompt_time=0.007626808, queue_time=None, total_time=0.084769665), x_groq={'id': 'req_01j1day42jf249jhjaqdh65hmp'})\n\n\n\nr.choices\n\n[Choice(finish_reason='stop', index=0, logprobs=None, message=ChatCompletionMessage(content=\"Hello Simon! It's nice to meet you. Is there something I can help you with, or would you like to chat?\", role='assistant', function_call=None, tool_calls=None))]\n\n\nWe see that we recieve a ChatCompletion object as a response. The ChatCompletion object includes information as the id, the choices (in our case exactly one choice) and other metadata.\nLet us implement a simple model to extract what we care about: The message we recieved from the model.\n\nsource\n\nfind_message\n\n find_message (r:collections.abc.Mapping)\n\nFinds the first message\n\n\n\n\nType\nDetails\n\n\n\n\nr\nMapping\nThe message to look in\n\n\n\n\n\nExported source\ndef find_message(r:abc.Mapping, # The message to look in\n              ):\n    \"Finds the first message\"\n    return first(c.message for c in r.choices)\n\n\n\nfind_message(r)\n\nChatCompletionMessage(content=\"Hello Simon! It's nice to meet you. Is there something I can help you with, or would you like to chat?\", role='assistant', function_call=None, tool_calls=None)\n\n\nWe see that a ChatCompletionMessage has different attributes: * content * role * function_call * tool_calls\nLet’s write a function that extracts only one of the attributes.\n\nsource\n\n\nget_message_attribute\n\n get_message_attribute (response, attribute='content')\n\nReturn specified attribute of the message in the response.\n\n\nExported source\ndef get_message_attribute(response, attribute='content'):\n    \"Return specified attribute of the message in the response.\"\n    msg = find_message(response)\n    return getattr(msg, attribute)\n\n\n\nget_message_attribute(r)\n\n\"Hello Simon! It's nice to meet you. Is there something I can help you with, or would you like to chat?\"\n\n\nThe response also contains a field with usage:\n\nr.usage\n\nCompletionUsage(completion_tokens=27, prompt_tokens=16, total_tokens=43, completion_time=0.077142857, prompt_time=0.007626808, queue_time=None, total_time=0.084769665)\n\n\n\nsource\n\n\nusage\n\n usage (inp=0, out=0)\n\nSlightly more concise version of CompletionUsage.\n\n\n\n\nType\nDefault\nDetails\n\n\n\n\ninp\nint\n0\nNumber of input tokens\n\n\nout\nint\n0\nNumber of output tokens\n\n\n\n\n\nExported source\ndef usage(inp=0, # Number of input tokens\n          out=0  # Number of output tokens\n         ):\n    \"Slightly more concise version of `CompletionUsage`.\"\n    return CompletionUsage(prompt_tokens=inp, completion_tokens=out, total_tokens=inp+out)\n\n\n\nusage(5, 8)\n\nCompletionUsage(completion_tokens=8, prompt_tokens=5, total_tokens=13, completion_time=None, prompt_time=None, queue_time=None, total_time=None)\n\n\nAdding a total function to get the number of total tokens\n\nsource\n\n\nCompletionUsage.total\n\n CompletionUsage.total ()\n\n\n\nExported source\n@patch(as_prop=True)\ndef total(self:CompletionUsage): return self.total_tokens\n\n\n\nusage(5,8).total\n\n13\n\n\n\nsource\n\n\nCompletionUsage.__repr__\n\n CompletionUsage.__repr__ ()\n\nReturn repr(self).\n\n\nExported source\n@patch\ndef __repr__(self:CompletionUsage): return f'In: {self.prompt_tokens}; Out: {self.completion_tokens}; Total: {self.total}'\n\n\nThe __repr__ function let’s us get a convenient displaying of the usage.\n\nusage(5,8)\n\nIn: 5; Out: 8; Total: 13\n\n\n\nsource\n\n\nCompletionUsage.__add__\n\n CompletionUsage.__add__ (b)\n\nAdd together each of input_tokens and output_tokens\n\n\nExported source\n@patch\ndef __add__(self:CompletionUsage, b):\n    \"Add together each of `input_tokens` and `output_tokens`\"\n    return usage(self.prompt_tokens+b.prompt_tokens, self.completion_tokens+b.completion_tokens)\n\n\nAdding two usages together can be accomplished by implementing __add__\n\nusage(3,4) + usage(5,6)\n\nIn: 8; Out: 10; Total: 18\n\n\n\n\n\nExports",
+    "crumbs": [
+      "Groquette"
+    ]
+  }
+]
