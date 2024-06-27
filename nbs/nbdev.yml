@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "groquette"
+  site-url: "https://simveit.github.io/groquette"
+  description: "Similar to claudette but for groq."
+  repo-branch: main
+  repo-url: "https://github.com/simveit/groquette"
