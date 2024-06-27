@@ -5,4 +5,9 @@ d = { 'settings': { 'branch': 'main',
                 'doc_host': 'https://simveit.github.io',
                 'git_url': 'https://github.com/simveit/groquette',
                 'lib_path': 'groquette'},
-  'syms': {'groquette.core': {}}}
+  'syms': { 'groquette.core': { 'groquette.core.CompletionUsage.__add__': ('core.html#completionusage.__add__', 'groquette/core.py'),
+                                'groquette.core.CompletionUsage.__repr__': ('core.html#completionusage.__repr__', 'groquette/core.py'),
+                                'groquette.core.CompletionUsage.total': ('core.html#completionusage.total', 'groquette/core.py'),
+                                'groquette.core.find_message': ('core.html#find_message', 'groquette/core.py'),
+                                'groquette.core.get_message_attribute': ('core.html#get_message_attribute', 'groquette/core.py'),
+                                'groquette.core.usage': ('core.html#usage', 'groquette/core.py')}}}
